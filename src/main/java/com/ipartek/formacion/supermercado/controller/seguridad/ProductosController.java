@@ -150,6 +150,8 @@ public class ProductosController extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		request.setAttribute("productos", dao.getAll());
+		vistaSeleccionada = VIEW_TABLA;
 
 	}
 

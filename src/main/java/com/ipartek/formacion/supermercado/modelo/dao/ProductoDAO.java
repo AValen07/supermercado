@@ -68,8 +68,20 @@ public class ProductoDAO implements IDAO<Producto>{
 
 	@Override
 	public Producto delete(int id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		Producto resultado = null;
+
+		for (Producto producto : registros) {
+			if (id == producto.getId()) {
+				resultado = producto;
+				registros.remove(producto);
+				break;
+			}
+		}
+
+		if (resultado == null) {
+			throw new Exception("Perro no encontrado por su id " + id);
+		}
+		return resultado;
 	}
 
 	@Override
