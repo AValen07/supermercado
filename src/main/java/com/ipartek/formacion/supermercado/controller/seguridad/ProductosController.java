@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ipartek.formacion.supermercado.modelo.dao.ProductoDAO;
+import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 
 /**
  * Servlet implementation class ProductosController
@@ -20,11 +21,12 @@ public class ProductosController extends HttpServlet {
 	private static final String VIEW_TABLA = "productos/index.jsp";
 	private static final String VIEW_FORM = "productos/formulario.jsp";
 	private static ProductoDAO dao;
+	private static String vistaSeleccionada = VIEW_TABLA;
 
 	// Acciones
-	public static final String ACCION_LISTAR = "listar";
+	public static final String ACCION_LISTAR = "lista";
 	public static final String ACCION_IR_FORMULARIO = "formulario";
-	public static final String ACCION_GUARDAR = "guardar"; //crear y modificar
+	public static final String ACCION_GUARDAR = "guardar"; // crear y modificar
 	public static final String ACCION_ELIMINAR = "eliminar";
 
 	@Override
@@ -61,68 +63,105 @@ public class ProductosController extends HttpServlet {
 		doAction(request, response);
 	}
 
-	private void doAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void doAction(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-		//recoger parametros
-		String pAccion=request.getParameter("accion");
-		
-		String pId=request.getParameter("id");
-		String pNombre=request.getParameter("nombre");
-		String pPrecio=request.getParameter("precio");
-		String pImagen=request.getParameter("imagen");
-		String pDescripcion=request.getParameter("descripcion");
-		String pDescuento=request.getParameter("descuento");
-		
-		
+		// recoger parametros
+		String pAccion = request.getParameter("accion");
+
+		String pId = request.getParameter("id");
+		String pNombre = request.getParameter("nombre");
+		String pPrecio = request.getParameter("precio");
+		String pImagen = request.getParameter("imagen");
+		String pDescripcion = request.getParameter("descripcion");
+		String pDescuento = request.getParameter("descuento");
+
 		try {
-			//TODO logica de negocio
-			
-			switch(pAccion) {
+			// TODO logica de negocio
+
+			switch (pAccion) {
 			case ACCION_LISTAR:
-				listar(request,response);
+				listar(request, response);
 				break;
 			case ACCION_ELIMINAR:
-				eliminar(request,response);
+				eliminar(request, response);
 				break;
 			case ACCION_GUARDAR:
-				guardar(request,response);
+				guardar(request, response);
 				break;
 			case ACCION_IR_FORMULARIO:
-				irFormulario(request,response);
+				irFormulario(request, response);
 				break;
-				
+
 			}
-			
-			request.setAttribute("productos", dao.getAll());
-		}catch(Exception e) {
-			
-			//TODO log
-			
-		}finally {
-			
-			request.getRequestDispatcher(VIEW_TABLA).forward(request, response);
-			
+
+		} catch (Exception e) {
+
+			// TODO log
+
+		} finally {
+
+			request.getRequestDispatcher(vistaSeleccionada).forward(request, response);
+
 		}
 	}
 
 	private void irFormulario(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+		// TODO pregutar por pID > 0 recuperar del DAO
+		// si no New Producto()
+		try {
+			int pId = Integer.parseInt(request.getParameter("id"));
+			if (pId != 0) {
+				Producto producto = dao.getById(pId);
+				request.setAttribute("producto", producto);
+			}
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			request.setAttribute("producto", new Producto());
+		}
+		vistaSeleccionada = VIEW_FORM;
+		// dao.getById(id) => implementar
 	}
 
-	private void guardar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+	private void guardar(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		try {
+			int pId = Integer.parseInt(request.getParameter("id"));
+			int pDescuento = Integer.parseInt(request.getParameter("descuento"));
+			float pPrecio = Float.parseFloat(request.getParameter("precio"));
+			String pNombre = request.getParameter("nombre");
+			String pImagen = request.getParameter("imagen");
+			String pDescripcion = request.getParameter("descripcion");
+			
+			Producto producto = new Producto();
+			producto.setNombre(pNombre);
+			producto.setDescripcion(pDescripcion);
+			producto.setDescuento(pDescuento);
+			producto.setImagen(pImagen);
+			producto.setPrecio(pPrecio);
+			if (dao.getById(pId)==null) {
+				dao.create(producto);
+			} else {
+				dao.update(pId, producto);
+			}
+
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void eliminar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+		// Auto-generated method stub
+
 	}
 
 	private void listar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+		request.setAttribute("productos", dao.getAll());
+		vistaSeleccionada = VIEW_TABLA;
+
 	}
 
 }
