@@ -25,5 +25,5 @@
   	<br>
   	<input type="submit" value="Enviar">
   </form>
-  
+  <a class="btn btn-danger btn-user btn-block" href="seguridad/productos?accion=eliminar&id=${producto.id}">Eliminar</a>
 <%@ include file="/includes/footer.jsp" %>

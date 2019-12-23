@@ -155,8 +155,11 @@ public class ProductosController extends HttpServlet {
 
 	}
 
-	private void eliminar(HttpServletRequest request, HttpServletResponse response) {
-		// Auto-generated method stub
+	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		int lId = Integer.parseInt(request.getParameter("id"));
+		dao.delete(lId);
+		request.setAttribute("productos", dao.getAll());
+		vistaSeleccionada = VIEW_TABLA;
 
 	}
 
