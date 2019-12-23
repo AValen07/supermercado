@@ -1,5 +1,13 @@
 package com.ipartek.formacion.supermercado.modelo.pojo;
 
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 public class Producto {
 
 	public static final int DESCUENTO_MIN=0;
@@ -7,10 +15,29 @@ public class Producto {
 	
 	
 	private int id;
-	private String nombre;
+	
+	@NotNull
+	@NotBlank
+	@Size(min=2, max=50)
+	private String nombre;	
+	
+	@Digits(fraction=2, integer = 6)
+	@Min(value=0,message="Tiene que ser mayor o igual que 0")
 	private float precio;
+	
+	@NotNull
+	@NotBlank
+	@Size(min=0, max=5000)
 	private String imagen;
+	
+	@NotNull
+	@NotBlank
+	@Size(min=0, max=150)
 	private String descripcion;
+	
+	@Digits(fraction = 0, integer = 3)
+	@Min(message="Tiene que ser un valor entre 0 y 100", value=0)
+	@Max(message="Tiene que ser un valor entre 0 y 100",value=100)
 	private int descuento;
 	
 	public Producto() {

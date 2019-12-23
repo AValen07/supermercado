@@ -91,9 +91,12 @@ public class ProductoDAO implements IDAO<Producto>{
 				PreparedStatement pst = con.prepareStatement(SQL_DELETE)) {
 		
 			pst.setInt(1, id);
+			resultado = getById(id);
+
 			int affectedRows = pst.executeUpdate();
-			if (affectedRows == 1) {
-				resultado = getById(id);
+			if (affectedRows != 1) {
+				resultado = null;
+				throw new Exception("No se puede eliminar " + resultado);
 			}
 		}
 		
@@ -117,6 +120,8 @@ public class ProductoDAO implements IDAO<Producto>{
 			int affectedRows = pst.executeUpdate();
 			if (affectedRows == 1) {
 				resultado = pojo;
+			}else {
+				throw new Exception("No se encontro registro para id=" + id);
 			}
 
 		}
