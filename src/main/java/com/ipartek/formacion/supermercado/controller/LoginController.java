@@ -8,15 +8,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ipartek.formacion.supermercado.modelo.dao.UsuarioDAO;
+import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
+
 /**
  * Servlet implementation class LoginController
  */
 @WebServlet("/login")
-public class LoginController extends HttpServlet {
+public class LoginController extends HttpServlet {	
 	private static final long serialVersionUID = 1L;
+	
+	
+	private static UsuarioDAO usuarioDAO = UsuarioDAO.getInstance();
+	
 	private static final String USUARIO ="admin";
 	private static final String PASSWORD ="admin";
 
+	
    
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,22 +39,25 @@ public class LoginController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String view="login.jsp";
-		String usuario=request.getParameter("usuario");
+		String nombre=request.getParameter("usuario");
 		String password=request.getParameter("password");
 		
 		//TODO POJO y DAO Usuario
 		
 		try {
-			if(USUARIO.equals(usuario)&&PASSWORD.equals(password))
+			
+			Usuario usuario = usuarioDAO.exist(nombre, password);
+			
+			if(usuario!=null)
 			{
-				//TODO login correcto.
+				// login correcto.
 				HttpSession session=request.getSession();
-				session.setAttribute("usuarioLogueado","Admin");
+				session.setAttribute("usuarioLogueado",usuario);
 				session.setMaxInactiveInterval(60*3);
 				
 				view="seguridad/index.jsp";
 			}else {
-				//TODO login incorrecto.
+				// login incorrecto.
 				request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "Credenciales incorrectas. Intentelo de nuevo."));
 
 			}

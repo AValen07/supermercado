@@ -6,7 +6,7 @@
   
   <main class="container">
   		
-  		<table>  			
+  		<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">  			
   			<thead>
   				<th>ID</th>
   				<th>Imagen</th>  				
@@ -14,15 +14,9 @@
   				<th>Precio</th>
   				<th>Descuento</th>
   				<th>Descripcion</th>
+  				<th>Acciones</th>
   			</thead>
-  			<tfoot>
-  				<th>ID</th>
-  				<th>Imagen</th>  				
-  				<th>Producto</th>
-  				<th>Precio</th>
-  				<th>Descuento</th>
-  				<th>Descripcion</th>
-  			</tfoot>
+  			
   			<c:forEach items="${productos}" var="producto">
 	  			<tbody>
 	  				<td>${producto.id}</td>

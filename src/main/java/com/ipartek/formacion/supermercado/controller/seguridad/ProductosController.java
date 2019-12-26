@@ -183,6 +183,10 @@ public class ProductosController extends HttpServlet {
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "Algun campo se ha completado de manera erronea."));
+			
+
+			vistaSeleccionada = VIEW_FORM;
 		}
 		
 
@@ -208,13 +212,11 @@ public class ProductosController extends HttpServlet {
 		dao.delete(lId);
 		request.setAttribute("productos", dao.getAll());
 		vistaSeleccionada = VIEW_TABLA;
-
 	}
 
 	private void listar(HttpServletRequest request, HttpServletResponse response) {
 		request.setAttribute("productos", dao.getAll());
 		vistaSeleccionada = VIEW_TABLA;
-
 	}
 
 }

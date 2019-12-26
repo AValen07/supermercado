@@ -4,11 +4,12 @@
  	<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 	<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 	<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+	
 	<base href="${pageContext.request.contextPath}/"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="Ander Uraga">
+    <meta name="author" content="Aitor Valencia">
     <title>Supermercado</title>
 
    <!-- Bootstrap core CSS -->
@@ -28,9 +29,32 @@
             	<a class="py-2 d-none d-md-inline-block" href="login.jsp">Login</a>
             </c:if>
             <c:if test="${not empty usuarioLogueado }">
-            <a class="py-2 d-none d-md-inline-block" href="seguridad/productos?accion=lista">Tabla</a>
-            <a class="py-2 d-none d-md-inline-block" href="seguridad/productos?accion=formulario">Formulario</a>            
-            <a class="py-2 d-none d-md-inline-block" href="logout">Cerrar sesion</a>            
+            <div>
+	            <a class="nav-link dropdown-toggle" href="#" id="productos" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	         	 Producto
+	       		</a>
+	       		<div class="dropdown-menu" aria-labelledby="productos">       		
+		            <a class="dropdown-item" href="seguridad/productos?accion=lista">Tabla</a>
+		            <a class="dropdown-item" href="seguridad/productos?accion=formulario">Formulario</a>
+	            </div>  
+            </div>
+            <div>
+	            <a class="nav-link dropdown-toggle" href="#" id="usuarios" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	         	 Usuario
+	       		</a>
+	       		<div class="dropdown-menu" aria-labelledby="usuarios">       		
+		            <a class="dropdown-item" href="seguridad/usuarios?accion=lista">Lista</a>
+		            <a class="dropdown-item" href="seguridad/usuarios?accion=formulario">Nuevo</a>
+	            </div>
+            </div> 
+            <div>  
+            	<a class="nav-link dropdown-toggle" href="#" id="usuario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            	${usuarioLogueado.nombre}
+            	</a>  
+            	<div class="dropdown-menu" aria-labelledby="usuario">       		
+                    <a class="dropdown-item" href="logout"> Cerrar sesion</a>
+	            </div>      
+            </div>            
             </c:if>
         </div>
     </nav>

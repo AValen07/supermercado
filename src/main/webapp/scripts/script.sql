@@ -42,6 +42,25 @@ INSERT INTO `producto` (`id`, `nombre`, `descripcion`, `precio`, `descuento`, `i
 	(9, 'vodka ruso', 'vodka ruso', 25, 25, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s');
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 
+-- Volcando estructura para tabla supermercado.usuario
+DROP TABLE IF EXISTS `usuario`;
+CREATE TABLE IF NOT EXISTS `usuario` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL DEFAULT '0',
+  `contrasena` varchar(50) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Volcando datos para la tabla supermercado.usuario: ~0 rows (aproximadamente)
+DELETE FROM `usuario`;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` (`id`, `nombre`, `contrasena`) VALUES
+	(1, 'admin', '123456'),
+	(2, 'pepe', '123456'),
+	(3, 'Dolores', '56789');
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
