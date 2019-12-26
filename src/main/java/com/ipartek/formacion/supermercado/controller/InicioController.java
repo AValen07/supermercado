@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ipartek.formacion.supermercado.model.ConnectionManager;
 import com.ipartek.formacion.supermercado.modelo.dao.ProductoDAO;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 
@@ -35,7 +36,16 @@ public class InicioController extends HttpServlet {
     	super.destroy();
     	dao=null;
     }
-    
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    	
+    	if(null==ConnectionManager.getConnection()) {
+    		resp.sendRedirect(req.getContextPath()+"/error.jsp");
+    	}else {    	
+	    	// LLama get o post
+	    	super.service(req, resp);
+    	}
+    }
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
