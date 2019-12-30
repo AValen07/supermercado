@@ -14,6 +14,7 @@
   				<th>Precio</th>
   				<th>Descuento</th>
   				<th>Descripcion</th>
+  				<th>Usuario</th>
   				<th>Acciones</th>
   			</thead>
   			
@@ -25,6 +26,7 @@
 	  				<td>${producto.precio}</td>
 	  				<td>${producto.descuento}</td>
 	  				<td>${producto.descripcion}</td>	  				
+	  				<td>${producto.usuario.nombre}</td>	  				
 	  				<td><a href="seguridad/productos?accion=formulario&id=${producto.id}">Editar</a></td>	  				
 	  			</tbody>
   			</c:forEach>

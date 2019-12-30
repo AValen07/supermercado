@@ -10,15 +10,16 @@ import java.util.List;
 
 import com.ipartek.formacion.supermercado.model.ConnectionManager;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
+import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 public class ProductoDAO implements IDAO<Producto>{
 
 	private static ProductoDAO INSTANCE;
 	
-	private static final String SQL_GET_ALL = "SELECT id, nombre, descripcion, precio, descuento, imagen  FROM producto ORDER BY id DESC LIMIT 500;";
-	private static final String SQL_GET_BY_ID = "SELECT id, nombre, descripcion, precio, descuento, imagen FROM producto WHERE id = ?;";
-	private static final String SQL_INSERT = "INSERT INTO producto (nombre, descripcion, precio, descuento, imagen) VALUES ( ? , ?, ?, ?, ?);";
-	private static final String SQL_UPDATE = "UPDATE producto SET nombre= ?, descripcion= ?, precio=?, descuento=?, imagen=?  WHERE id = ?;";
+	private static final String SQL_GET_ALL = "SELECT id, nombre, descripcion, precio, descuento, imagen, id_usuario  FROM producto ORDER BY id DESC LIMIT 500;";
+	private static final String SQL_GET_BY_ID = "SELECT id, nombre, descripcion, precio, descuento, imagen, id_usuario FROM producto WHERE id = ?;";
+	private static final String SQL_INSERT = "INSERT INTO producto (nombre, descripcion, precio, descuento, imagen, id_usuario) VALUES ( ? , ?, ?, ?, ?, ?);";
+	private static final String SQL_UPDATE = "UPDATE producto SET nombre= ?, descripcion= ?, precio=?, descuento=?, imagen=?,  WHERE id = ?;";
 	private static final String SQL_DELETE = "DELETE FROM producto WHERE id = ?";
 	
 	private ProductoDAO() {		
@@ -32,9 +33,7 @@ public class ProductoDAO implements IDAO<Producto>{
 		}
 		
 		return INSTANCE;
-	}
-	
-	
+	}	
 
 	@Override
 	public List<Producto> getAll() {		
@@ -47,13 +46,8 @@ public class ProductoDAO implements IDAO<Producto>{
 
 			while (rs.next()) {
 				
-				Producto p = new Producto();
-				p.setId( rs.getInt("id"));
-				p.setNombre(rs.getString("nombre"));
-				p.setDescripcion(rs.getString("descripcion"));
-				p.setImagen(rs.getString("imagen"));
-				p.setDescuento(rs.getInt("descuento"));
-				p.setPrecio(rs.getFloat("precio"));
+				Producto p = mapper(rs);			
+				
 				lista.add(p);
 			}
 
@@ -141,6 +135,7 @@ public class ProductoDAO implements IDAO<Producto>{
 			pst.setFloat(3, pojo.getPrecio());
 			pst.setInt(4, pojo.getDescuento());
 			pst.setString(5, pojo.getImagen());
+			pst.setInt(6, pojo.getUsuario().getId());
 
 			int affectedRows = pst.executeUpdate();
 			if (affectedRows == 1) {
@@ -167,6 +162,8 @@ public class ProductoDAO implements IDAO<Producto>{
 		p.setDescuento(rs.getInt("descuento"));
 		p.setPrecio(rs.getFloat("precio"));		
 		
+		Usuario u = UsuarioDAO.getInstance().getById(rs.getInt("id_usuario"));
+		p.setUsuario(u);
 		return p;
 	}
 

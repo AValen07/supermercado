@@ -40,6 +40,8 @@ public class Producto {
 	@Max(message="Tiene que ser un valor entre 0 y 100",value=100)
 	private int descuento;
 	
+	private Usuario usuario;
+	
 	public Producto() {
 		super();
 		this.id=0;
@@ -48,11 +50,12 @@ public class Producto {
 		this.imagen="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s";
 		this.descripcion="";
 		this.descuento=DESCUENTO_MIN;
+		this.setUsuario(new Usuario());
 	}
 
 	
 	
-	public Producto(int id, String nombre, float precio, String imagen, String descripcion, int descuento) {
+	public Producto(int id, String nombre, float precio, String imagen, String descripcion, int descuento, Usuario usuario) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -60,6 +63,7 @@ public class Producto {
 		this.imagen = imagen;
 		this.descripcion = descripcion;
 		this.descuento = descuento;
+		this.usuario = usuario;
 	}
 
 	public float precioCalculado() {
@@ -114,7 +118,7 @@ public class Producto {
 	public int getDescuento() {
 		return descuento;
 	}
-
+	
 	public void setDescuento(int descuento) {
 		this.descuento = descuento;
 	}
@@ -123,6 +127,17 @@ public class Producto {
 	public String toString() {
 		return "Producto [id=" + id + ", nombre=" + nombre + ", precio=" + precio + ", imagen=" + imagen
 				+ ", descripcion=" + descripcion + ", descuento=" + descuento + "]";
+	}
+
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 	
 	
