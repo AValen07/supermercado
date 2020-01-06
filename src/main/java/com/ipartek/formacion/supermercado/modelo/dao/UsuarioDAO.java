@@ -10,13 +10,15 @@ import java.util.List;
 
 import com.ipartek.formacion.supermercado.model.ConnectionManager;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
+import com.ipartek.formacion.supermercado.modelo.pojo.Rol;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 public class UsuarioDAO implements IUsuarioDAO {
 
-	private static final String SQL_EXIST = "SELECT id, nombre, contrasena FROM usuario WHERE nombre=? AND contrasena=?;";
-	private static final String SQL_GET_ALL = "SELECT id, nombre, contrasena FROM usuario ";
-	private static final String SQL_GET_BY_ID = "SELECT id, nombre, contrasena FROM usuario WHERE id=?";
+	private static final String SQL_EXIST = "SELECT id 'id_usuario', nombre 'nombre_usuario', contrasena FROM usuario WHERE nombre=? AND contrasena=?;";
+	private static final String SQL_GET_ALL = " SELECT u.id 'id_usuario', u.nombre 'nombre_usuario', contrasenia, r.id 'id_rol', r.nombre 'nombre_rol' "
+			+ " FROM usuario u, rol r " + " WHERE u.id_rol = r.id " + " ORDER BY u.id DESC LIMIT 500;";
+	private static final String SQL_GET_BY_ID = "SELECT id 'id_usuario', nombre 'nombre_usuario', contrasena FROM usuario WHERE id=?";
 	private static final String SQL_INSERT = "INSERT INTO usuario (nombre, contrasena) VALUES ( ? , ?);";
 	private static final String SQL_UPDATE = "UPDATE usuario SET nombre= ?, contrasena= ?  WHERE id = ?;";
 	private static final String SQL_DELETE = "DELETE FROM usuario WHERE id = ?";
@@ -176,11 +178,17 @@ public class UsuarioDAO implements IUsuarioDAO {
 
 	private Usuario mapper(ResultSet rs) throws SQLException {
 		
-		Usuario resultado = new Usuario();
-		resultado.setId(rs.getInt("id"));
-		resultado.setNombre(rs.getString("nombre"));
-		resultado.setContrasena(rs.getString("contrasena"));
-		
-		return resultado;
+		Usuario u = new Usuario();
+		u.setId(rs.getInt("id_usuario"));
+		u.setNombre(rs.getString("nombre_usuario"));
+		u.setContrasena(rs.getString("contrasena"));
+
+		Rol r = new Rol();
+		r.setId(rs.getInt("id_rol"));
+		r.setNombre(rs.getString("nombre_rol"));
+
+		u.setRol(r);
+
+		return u;
 	}
 }

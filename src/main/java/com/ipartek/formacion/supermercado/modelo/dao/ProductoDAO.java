@@ -8,16 +8,24 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ipartek.formacion.supermercado.model.ConnectionManager;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 public class ProductoDAO implements IDAO<Producto>{
 
+	private final static Logger LOG = Logger.getLogger(ProductoDAO.class);
+
+	
 	private static ProductoDAO INSTANCE;
 	
 	private static final String SQL_GET_ALL = "SELECT id, nombre, descripcion, precio, descuento, imagen, id_usuario  FROM producto ORDER BY id DESC LIMIT 500;";
-	private static final String SQL_GET_BY_ID = "SELECT id, nombre, descripcion, precio, descuento, imagen, id_usuario FROM producto WHERE id = ?;";
+	private static final String SQL_GET_ALL_BY_USER = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', u.id 'id_usuario', u.nombre 'nombre_usuario' "
+			+ " FROM producto p, usuario u " + " WHERE p.id_usuario = u.id AND u.id = ? "
+			+ " ORDER BY p.id DESC LIMIT 500;";
+	private static final String SQL_GET_BY_ID = "SELECT id, nombre, descripcion, precio, descuento, imagen, id_usuario FROM producto WHERE id = ?;";	
 	private static final String SQL_INSERT = "INSERT INTO producto (nombre, descripcion, precio, descuento, imagen, id_usuario) VALUES ( ? , ?, ?, ?, ?, ?);";
 	private static final String SQL_UPDATE = "UPDATE producto SET nombre= ?, descripcion= ?, precio=?, descuento=?, imagen=?,  WHERE id = ?;";
 	private static final String SQL_DELETE = "DELETE FROM producto WHERE id = ?";
@@ -78,6 +86,29 @@ public class ProductoDAO implements IDAO<Producto>{
 		return resul;
 	}
 
+	public List<Producto> getAllByUser(int idUsuario) {
+
+		ArrayList<Producto> lista = new ArrayList<Producto>();
+
+		try (Connection con = ConnectionManager.getConnection();
+				PreparedStatement pst = con.prepareStatement(SQL_GET_ALL_BY_USER);) {
+
+			pst.setInt(1, idUsuario);
+			LOG.debug(pst);
+
+			try (ResultSet rs = pst.executeQuery()) {
+				while (rs.next()) {
+					lista.add(mapper(rs));
+				}
+			} // executeQuery
+
+		} catch (SQLException e) {
+			LOG.error(e);
+		}
+
+		return lista;
+	}
+	
 	@Override
 	public Producto delete(int id) throws Exception {
 		Producto resultado=null;

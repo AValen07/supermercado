@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.ipartek.formacion.supermercado.modelo.dao.UsuarioDAO;
+import com.ipartek.formacion.supermercado.modelo.pojo.Rol;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 /**
@@ -56,6 +57,15 @@ public class LoginController extends HttpServlet {
 				session.setMaxInactiveInterval(60*3);
 				
 				view="seguridad/index.jsp";
+				
+				if ( usuario.getRol().getId() == Rol.ROL_ADMIN ) {
+					
+					view = "seguridad/index.jsp";   // accedemos la BACK-OFFICE
+					
+				}else {
+					
+					view = "mipanel/index.jsp";    // accedemos la FRONT-OFFICE
+				}
 			}else {
 				// login incorrecto.
 				request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "Credenciales incorrectas. Intentelo de nuevo."));
