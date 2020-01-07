@@ -28,7 +28,8 @@
             <c:if test="${empty usuarioLogueado }">
             	<a class="py-2 d-none d-md-inline-block" href="login.jsp">Login</a>
             </c:if>
-            <c:if test="${not empty usuarioLogueado }">
+            
+            <c:if test="${usuarioLogueado.rol.id eq 2}">
             <div>
 	            <a class="nav-link dropdown-toggle" href="#" id="productos" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	         	 Producto
@@ -45,6 +46,35 @@
 	       		<div class="dropdown-menu" aria-labelledby="usuarios">       		
 		            <a class="dropdown-item" href="seguridad/usuarios?accion=lista">Lista</a>
 		            <a class="dropdown-item" href="seguridad/usuarios?accion=formulario">Nuevo</a>
+	            </div>
+            </div> 
+            <div>  
+            	<a class="nav-link dropdown-toggle" href="#" id="usuario" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            	${usuarioLogueado.nombre}
+            	</a>  
+            	<div class="dropdown-menu" aria-labelledby="usuario">       		
+                    <a class="dropdown-item" href="logout"> Cerrar sesion</a>
+	            </div>      
+            </div>            
+            </c:if>
+            
+            <c:if test="${usuarioLogueado.rol.id eq 1}">
+            <div>
+	            <a class="nav-link dropdown-toggle" href="#" id="productos" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	         	 Producto
+	       		</a>
+	       		<div class="dropdown-menu" aria-labelledby="productos">       		
+		            <a class="dropdown-item" href="mipanel/productos?accion=lista">Tabla</a>
+		            <a class="dropdown-item" href="mipanel/productos?accion=formulario">Formulario</a>
+	            </div>  
+            </div>
+            <div>
+	            <a class="nav-link dropdown-toggle" href="#" id="usuarios" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	         	 Usuario
+	       		</a>
+	       		<div class="dropdown-menu" aria-labelledby="usuarios">       		
+		            <a class="dropdown-item" href="mipanel/usuarios?accion=lista">Lista</a>
+		            <a class="dropdown-item" href="mipanel/usuarios?accion=formulario">Nuevo</a>
 	            </div>
             </div> 
             <div>  

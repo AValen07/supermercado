@@ -15,8 +15,9 @@ import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 public class UsuarioDAO implements IUsuarioDAO {
 
-	private static final String SQL_EXIST = "SELECT id 'id_usuario', nombre 'nombre_usuario', contrasena FROM usuario WHERE nombre=? AND contrasena=?;";
-	private static final String SQL_GET_ALL = " SELECT u.id 'id_usuario', u.nombre 'nombre_usuario', contrasenia, r.id 'id_rol', r.nombre 'nombre_rol' "
+	private static final String SQL_EXIST = " SELECT u.id 'id_usuario', u.nombre 'nombre_usuario', contrasena, r.id 'id_rol', r.nombre 'nombre_rol' "
+			+ " FROM usuario u, rol r " + " WHERE u.id_rol = r.id AND " + " u.nombre = ? AND contrasena = ? ; ";
+	private static final String SQL_GET_ALL = " SELECT u.id 'id_usuario', u.nombre 'nombre_usuario', contrasena, r.id 'id_rol', r.nombre 'nombre_rol' "
 			+ " FROM usuario u, rol r " + " WHERE u.id_rol = r.id " + " ORDER BY u.id DESC LIMIT 500;";
 	private static final String SQL_GET_BY_ID = "SELECT id 'id_usuario', nombre 'nombre_usuario', contrasena FROM usuario WHERE id=?";
 	private static final String SQL_INSERT = "INSERT INTO usuario (nombre, contrasena) VALUES ( ? , ?);";
@@ -47,13 +48,9 @@ public class UsuarioDAO implements IUsuarioDAO {
 				PreparedStatement pst = con.prepareStatement(SQL_GET_ALL);
 				ResultSet rs = pst.executeQuery()) {
 
-			while (rs.next()) {
+			while (rs.next()) {			
 				
-				Usuario u = new Usuario();
-				u.setId( rs.getInt("id"));
-				u.setNombre(rs.getString("nombre"));
-				u.setContrasena(rs.getString("contrasena"));
-				lista.add(u);
+				lista.add(mapper(rs));
 			}
 
 		} catch (SQLException e) {
@@ -163,11 +160,7 @@ public class UsuarioDAO implements IUsuarioDAO {
 
 			try (ResultSet rs = pst.executeQuery();) {
 				if (rs.next()) {
-					// mapeal del RS al POJO
-					resultado = new Usuario();
-					resultado.setId(rs.getInt("id"));
-					resultado.setNombre(rs.getString("nombre"));
-					resultado.setContrasena(rs.getString("contrasena"));
+					resultado = mapper(rs);
 				}
 			}
 

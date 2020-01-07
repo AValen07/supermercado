@@ -50,7 +50,7 @@ public class SeguridadFrontofficeFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse)response;
 		
 		HttpSession session = req.getSession();
-		Usuario uLogeado = (Usuario) session.getAttribute("usuarioLogeado");
+		Usuario uLogeado = (Usuario) session.getAttribute("usuarioLogueado");
 		
 		if ( uLogeado != null && uLogeado.getRol().getId() == Rol.ROL_USUARIO ) {
 		

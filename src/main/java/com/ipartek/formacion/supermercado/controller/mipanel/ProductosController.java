@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.ipartek.formacion.supermercado.controller.Alerta;
 import com.ipartek.formacion.supermercado.modelo.dao.ProductoDAO;
+import com.ipartek.formacion.supermercado.modelo.dao.ProductoException;
 import com.ipartek.formacion.supermercado.modelo.dao.UsuarioDAO;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
@@ -40,7 +41,7 @@ public class ProductosController extends HttpServlet {
 	private static UsuarioDAO daoUsuario;
 	private Usuario uLogeado;
 	//acciones
-	public static final String ACCION_LISTAR = "listar";
+	public static final String ACCION_LISTAR = "lista";
 	public static final String ACCION_IR_FORMULARIO = "formulario";
 	public static final String ACCION_GUARDAR = "guardar";   // crear y modificar
 	public static final String ACCION_ELIMINAR = "eliminar";
@@ -106,7 +107,7 @@ public class ProductosController extends HttpServlet {
 			pDescripcion = request.getParameter("descripcion");
 			pDescuento = request.getParameter("descuento");
 						
-			uLogeado = (Usuario)request.getSession().getAttribute("usuarioLogeado");
+			uLogeado = (Usuario)request.getSession().getAttribute("usuarioLogueado");
 			
 			//TODO agujero de seguridad, comprobar que el usuario de session sea el propietario del Producto
 			
@@ -128,34 +129,31 @@ public class ProductosController extends HttpServlet {
 				default:
 					listar(request, response);
 					break;
-				}
+				}				
 				
+			}catch (ProductoException e) {
 				
-				
+				LOG.warn(e);
+				response.sendRedirect(request.getContextPath()+"/logout");
 				
 			}catch (Exception e) {
-				
-				LOG.error(e);
-				
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}finally {
 				
 				request.getRequestDispatcher(vistaSeleccionda).forward(request, response);
-			}
-			
-			
-		
-		
+			}	
 	}
 
 
-	private void irFormulario(HttpServletRequest request, HttpServletResponse response) {
+	private void irFormulario(HttpServletRequest request, HttpServletResponse response) throws ProductoException {
 		
 		Producto pEditar = new Producto();
 		
 		if ( pId != null ) {
 			
 			int id = Integer.parseInt(pId);
-			pEditar = daoProducto.getById(id);
+			pEditar = daoProducto.getByIdByUser(id, uLogeado.getId());
 			
 		}
 		
@@ -173,6 +171,8 @@ public class ProductosController extends HttpServlet {
 		pGuardar.setId(id);
 		pGuardar.setNombre(pNombre);
 		pGuardar.setDescuento( Integer.parseInt(pDescuento));
+		pGuardar.setDescripcion(pDescripcion);
+		pGuardar.setImagen(pImagen);
 		
 		Usuario u = new Usuario();
 		u.setId(uLogeado.getId()); //Evitar que se envie el parametro desde el formulario
@@ -188,7 +188,7 @@ public class ProductosController extends HttpServlet {
 				
 					if ( id > 0 ) {  // modificar
 						
-						daoProducto.update(id, pGuardar);		
+						daoProducto.updateByUser(id,uLogeado.getId(), pGuardar);		
 						
 					}else {            // crear
 						daoProducto.create(pGuardar);
@@ -228,7 +228,7 @@ public class ProductosController extends HttpServlet {
 	
 		int id = Integer.parseInt(pId);
 		try {
-			Producto pEliminado = daoProducto.delete(id);
+			Producto pEliminado = daoProducto.deleteByUser(id,uLogeado.getId());
 			request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY, "Eliminado " + pEliminado.getNombre() ));
 		} catch (Exception e) {
 			request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "No se puede Eliminar el producto"));
@@ -241,8 +241,7 @@ public class ProductosController extends HttpServlet {
 
 	private void listar(HttpServletRequest request, HttpServletResponse response) {
 		
-		ArrayList<Producto> productos = (ArrayList<Producto>) daoProducto.getAllByUser(uLogeado.getId());
-		request.setAttribute("productos", productos );
+		request.setAttribute("productos", daoProducto.getAllByUser(uLogeado.getId()));
 		vistaSeleccionda = VIEW_TABLA;
 		
 	}
