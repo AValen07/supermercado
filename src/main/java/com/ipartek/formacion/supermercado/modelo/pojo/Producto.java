@@ -42,6 +42,8 @@ public class Producto {
 	
 	private Usuario usuario;
 	
+	private Categoria categoria;
+	
 	public Producto() {
 		super();
 		this.id=0;
@@ -51,10 +53,23 @@ public class Producto {
 		this.descripcion="";
 		this.descuento=DESCUENTO_MIN;
 		this.setUsuario(new Usuario());
+		this.setCategoria(new Categoria());
 	}
 
 	
 	
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
+	}
+
+
+
 	public Producto(int id, String nombre, float precio, String imagen, String descripcion, int descuento, Usuario usuario) {
 		super();
 		this.id = id;

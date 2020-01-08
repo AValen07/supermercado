@@ -4,6 +4,7 @@
 
 	
         <div class="row contenedor-productos">
+        	<p>${categorias}</p>
 			<c:forEach items="${productos}" var="producto">
 		            <div class="col">
 		
@@ -19,6 +20,8 @@
 		                        </p>
 		                        <p class="text-muted precio-unidad"></p>
 		                        <p class="descripcion text-truncate" >${producto.nombre }</p>
+		                        <p class="descripcion text-truncate" >Creado por: ${producto.usuario.nombre }</p>
+		                        <p class="descripcion text-truncate" >Categoria:  ${producto.categoria.nombre }</p>
 		                    </div> 
 	                    </div>
 		                <!-- /.producto -->

@@ -11,47 +11,50 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ipartek.formacion.supermercado.model.ConnectionManager;
+import com.ipartek.formacion.supermercado.modelo.pojo.Categoria;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
-public class ProductoDAO implements IProductoDAO{
+public class ProductoDAO implements IProductoDAO {
 
 	private final static Logger LOG = Logger.getLogger(ProductoDAO.class);
 
-	
 	private static ProductoDAO INSTANCE;
-	
-	private static final String SQL_GET_ALL = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario' "
-			+ " FROM producto p, usuario u " + " WHERE p.id_usuario = u.id " + " ORDER BY p.id DESC LIMIT 500;";	
-	private static final String SQL_GET_ALL_BY_USER = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario' "
-			+ " FROM producto p, usuario u " + " WHERE p.id_usuario = u.id AND u.id = ? "
+
+	private static final String SQL_GET_ALL = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario', c.id 'id_categoria', c.nombre 'nombre_categoria'"
+			+ " FROM producto p JOIN usuario u ON u.id=p.id_usuario"
+			+ " JOIN categoria c ON c.id=p.id_categoria" 
 			+ " ORDER BY p.id DESC LIMIT 500;";
-	private static final String SQL_GET_BY_ID = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario' FROM producto p, usuario u WHERE id = ?;";	
+	private static final String SQL_GET_ALL_BY_USER = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario', c.id 'id_categoria', c.nombre 'nombre_categoria'"
+			+ " FROM producto p JOIN usuario u ON u.id=p.id_usuario"
+			+ " JOIN categoria c ON c.id=p.id_categoria" 
+			+ " WHERE u.id = ? "
+			+ " ORDER BY p.id DESC LIMIT 500;";
+	private static final String SQL_GET_BY_ID = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario' FROM producto p, usuario u WHERE id = ?;";
 	private static final String SQL_INSERT = "INSERT INTO producto (nombre, descripcion, precio, descuento, imagen, id_usuario) VALUES ( ? , ?, ?, ?, ?, ?);";
 	private static final String SQL_UPDATE = "UPDATE producto SET nombre= ?, descripcion= ?, precio=?, descuento=?, imagen=?,  WHERE id = ?;";
 	private static final String SQL_DELETE = "DELETE FROM producto WHERE id = ?";
-	
+
 	private static final String SQL_UPDATE_BY_USER = "UPDATE producto SET nombre= ?, descripcion= ?, precio=?, descuento=?, imagen=?  WHERE id = ? AND id_usuario = ?;";
 	private static final String SQL_DELETE_BY_USER = "DELETE FROM producto WHERE id = ? AND id_usuario = ?;";
-	private static final String SQL_GET_BY_ID_BY_USER = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario'  FROM producto p, usuario u WHERE p.id_usuario = u.id AND p.id = ? AND p.id_usuario = ?;";	
+	private static final String SQL_GET_BY_ID_BY_USER = "SELECT p.id 'id_producto', p.nombre 'nombre_producto', descripcion, imagen, descuento, precio, u.id 'id_usuario', u.nombre 'nombre_usuario'  FROM producto p, usuario u WHERE p.id_usuario = u.id AND p.id = ? AND p.id_usuario = ?;";
 
-	
-	private ProductoDAO() {		
-		super();			
+	private ProductoDAO() {
+		super();
 	}
-	
+
 	public static synchronized ProductoDAO getInstance() {
-		
-		if ( INSTANCE == null ) {
-			INSTANCE = new ProductoDAO(); 
+
+		if (INSTANCE == null) {
+			INSTANCE = new ProductoDAO();
 		}
-		
+
 		return INSTANCE;
-	}	
+	}
 
 	@Override
-	public List<Producto> getAll() {		
-		
+	public List<Producto> getAll() {
+
 		ArrayList<Producto> lista = new ArrayList<Producto>();
 
 		try (Connection con = ConnectionManager.getConnection();
@@ -59,9 +62,9 @@ public class ProductoDAO implements IProductoDAO{
 				ResultSet rs = pst.executeQuery()) {
 
 			while (rs.next()) {
-				
-				Producto p = mapper(rs);			
-				
+
+				Producto p = mapper(rs);
+
 				lista.add(p);
 			}
 
@@ -71,7 +74,7 @@ public class ProductoDAO implements IProductoDAO{
 
 		return lista;
 	}
-	
+
 	public List<Producto> getAllByUser(int idUsuario) {
 
 		ArrayList<Producto> lista = new ArrayList<Producto>();
@@ -114,7 +117,7 @@ public class ProductoDAO implements IProductoDAO{
 		}
 		return resul;
 	}
-	
+
 	@Override
 	public Producto getByIdByUser(int idPRoducto, int idUsuario) throws ProductoException {
 		Producto resul = null;
@@ -136,15 +139,13 @@ public class ProductoDAO implements IProductoDAO{
 		return resul;
 	}
 
-
-	
 	@Override
 	public Producto delete(int id) throws Exception {
-		Producto resultado=null;
-		
+		Producto resultado = null;
+
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_DELETE)) {
-		
+
 			pst.setInt(1, id);
 			resultado = getById(id);
 
@@ -154,17 +155,17 @@ public class ProductoDAO implements IProductoDAO{
 				throw new Exception("No se puede eliminar " + resultado);
 			}
 		}
-		
+
 		return resultado;
 	}
-	
+
 	@Override
 	public Producto deleteByUser(int idProducto, int idUsuario) throws ProductoException {
-		Producto resultado=null;
-		
+		Producto resultado = null;
+
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_DELETE_BY_USER)) {
-		
+
 			pst.setInt(1, idProducto);
 			pst.setInt(2, idUsuario);
 			resultado = getByIdByUser(idProducto, idUsuario);
@@ -182,14 +183,14 @@ public class ProductoDAO implements IProductoDAO{
 
 			throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
 		}
-		
-		return resultado;		
+
+		return resultado;
 	}
 
 	@Override
 	public Producto update(int id, Producto pojo) throws Exception {
-		Producto resultado=null;
-		
+		Producto resultado = null;
+
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_UPDATE)) {
 
@@ -203,19 +204,19 @@ public class ProductoDAO implements IProductoDAO{
 			int affectedRows = pst.executeUpdate();
 			if (affectedRows == 1) {
 				resultado = pojo;
-			}else {
+			} else {
 				throw new Exception("No se encontro registro para id=" + id);
 			}
 
 		}
-		
+
 		return resultado;
 	}
-	
+
 	@Override
 	public Producto updateByUser(int idProducto, int idUsuario, Producto pojo) throws ProductoException, SQLException {
-		Producto resultado=null;
-		
+		Producto resultado = null;
+
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_UPDATE_BY_USER)) {
 
@@ -230,22 +231,22 @@ public class ProductoDAO implements IProductoDAO{
 			int affectedRows = pst.executeUpdate();
 			if (affectedRows == 1) {
 				resultado = pojo;
-			}else {
+			} else {
 				LOG.warn("No le pertence el producto");
 				throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
 			}
 
-		}catch ( SQLException e) {			
+		} catch (SQLException e) {
 			LOG.debug("ya existe el nombre del producto");
 			throw e;
 		}
-		
+
 		return resultado;
 	}
 
 	@Override
 	public Producto create(Producto pojo) throws Exception {
-		
+
 		try (Connection con = ConnectionManager.getConnection();
 				PreparedStatement pst = con.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -270,21 +271,27 @@ public class ProductoDAO implements IProductoDAO{
 
 		return pojo;
 	}
-	
+
 	private Producto mapper(ResultSet rs) throws SQLException {
-		
+
 		Producto p = new Producto();
-		p.setId( rs.getInt("id_producto"));
+		p.setId(rs.getInt("id_producto"));
 		p.setNombre(rs.getString("nombre_producto"));
 		p.setDescripcion(rs.getString("descripcion"));
 		p.setImagen(rs.getString("imagen"));
 		p.setDescuento(rs.getInt("descuento"));
-		p.setPrecio(rs.getFloat("precio"));		
-		
+		p.setPrecio(rs.getFloat("precio"));
+
 		Usuario u = new Usuario();
 		u.setId(rs.getInt("id_usuario"));
 		u.setNombre(rs.getString("nombre_usuario"));
 		p.setUsuario(u);
+		
+		Categoria c=new Categoria();
+		c.setId(rs.getInt("id_categoria"));
+		c.setNombre(rs.getString("nombre_categoria"));
+		p.setCategoria(c);
+		
 		return p;
-	}	
+	}
 }

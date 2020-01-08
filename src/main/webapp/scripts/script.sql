@@ -17,11 +17,30 @@ DROP DATABASE IF EXISTS `supermercado`;
 CREATE DATABASE IF NOT EXISTS `supermercado` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `supermercado`;
 
+-- Volcando estructura para tabla supermercado.categoria
+DROP TABLE IF EXISTS `categoria`;
+CREATE TABLE IF NOT EXISTS `categoria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Volcando datos para la tabla supermercado.categoria: ~0 rows (aproximadamente)
+DELETE FROM `categoria`;
+/*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
+INSERT INTO `categoria` (`id`, `nombre`) VALUES
+	(1, 'alimentacion'),
+	(2, 'electrodomesticos'),
+	(3, 'textil');
+/*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
+
 -- Volcando estructura para tabla supermercado.producto
 DROP TABLE IF EXISTS `producto`;
 CREATE TABLE IF NOT EXISTS `producto` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(50) NOT NULL,
+  `id_categoria` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `descripcion` varchar(150) NOT NULL,
   `precio` float NOT NULL DEFAULT '0',
@@ -30,18 +49,21 @@ CREATE TABLE IF NOT EXISTS `producto` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `nombre` (`nombre`),
   KEY `FK_usuario` (`id_usuario`),
+  KEY `FK_producto_categoria` (`id_categoria`),
+  CONSTRAINT `FK_producto_categoria` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id`),
   CONSTRAINT `FK_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla supermercado.producto: ~6 rows (aproximadamente)
 DELETE FROM `producto`;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` (`id`, `nombre`, `id_usuario`, `descripcion`, `precio`, `descuento`, `imagen`) VALUES
-	(1, 'leche', 1, 'leche entera', 0.6, 0, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
-	(2, 'cafe', 1, 'cafe descafeinado', 1.6, 10, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
-	(3, 'tortilla', 3, 'tortilla de patata', 3.2, 20, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
-	(4, 'vodka rusp', 2, 'vodka ', 24, 25, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
-	(5, 'alcohol', 1, 'baratico', 20, 5, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s');
+INSERT INTO `producto` (`id`, `nombre`, `id_categoria`, `id_usuario`, `descripcion`, `precio`, `descuento`, `imagen`) VALUES
+	(1, 'leche', 1, 1, 'leche entera', 0.6, 0, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
+	(2, 'cafe', 1, 1, 'cafe descafeinado', 1.6, 10, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
+	(3, 'tortilla', 1, 3, 'tortilla de patata', 3.2, 20, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
+	(4, 'vodka rusp', 1, 2, 'vodka ', 24, 25, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
+	(5, 'alcohol', 1, 1, 'baratico', 20, 5, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s'),
+	(21, 'txuleta', 1, 2, 'ternera', 25, 10, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9MJfiNi1BGC6eaEIDMp6H1tRv1BELm5Lrh-6Go7r3U-a51hh2LA&s');
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 
 -- Volcando estructura para tabla supermercado.rol
@@ -80,6 +102,16 @@ INSERT INTO `usuario` (`id`, `nombre`, `contrasena`, `id_rol`) VALUES
 	(2, 'pepe', '123456', 1),
 	(3, 'Dolores', '56789', 1);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+
+-- Volcando estructura para procedimiento supermercado.pa_categoria_getall
+DROP PROCEDURE IF EXISTS `pa_categoria_getall`;
+DELIMITER //
+CREATE PROCEDURE `pa_categoria_getall`()
+BEGIN
+	-- nuestro primer pa
+	SELECT id, nombre FROM categoria ORDER BY nombre ASC LIMIT 500;
+END//
+DELIMITER ;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

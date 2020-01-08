@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ipartek.formacion.supermercado.model.ConnectionManager;
+import com.ipartek.formacion.supermercado.modelo.dao.CategoriaDAO;
 import com.ipartek.formacion.supermercado.modelo.dao.ProductoDAO;
+import com.ipartek.formacion.supermercado.modelo.pojo.Categoria;
 import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 
 /**
@@ -21,6 +23,7 @@ import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 public class InicioController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private static ProductoDAO dao;
+    private static CategoriaDAO daoCategoria;
     
 
     @Override
@@ -28,6 +31,7 @@ public class InicioController extends HttpServlet {
     	// TODO Auto-generated method stub
     	super.init(config);
     	dao=ProductoDAO.getInstance();
+    	daoCategoria=CategoriaDAO.getInstance();
     }
     
     @Override
@@ -35,6 +39,7 @@ public class InicioController extends HttpServlet {
     	// TODO Auto-generated method stub
     	super.destroy();
     	dao=null;
+    	daoCategoria=null;
     }
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -61,7 +66,20 @@ public class InicioController extends HttpServlet {
 		
 		//TODO LLamar al DAO capa modelo.
 		ArrayList<Producto> productos=(ArrayList<Producto>) dao.getAll();
+		//ArrayList<Categoria> categorias=(ArrayList<Categoria>) daoCategoria.getAll();
+		/*
+		Categoria c=new Categoria();
+		c.setNombre("varios");
+		
+		try {
+			daoCategoria.create(c);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		request.setAttribute("productos", productos);
+		//request.setAttribute("categorias", categorias);
 		request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY,"Bienvenido"));
 		request.getRequestDispatcher("index.jsp").forward(request, response);;
 	}
