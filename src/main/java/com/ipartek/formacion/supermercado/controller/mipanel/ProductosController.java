@@ -163,7 +163,7 @@ public class ProductosController extends HttpServlet {
 		
 	}
 
-	private void guardar(HttpServletRequest request, HttpServletResponse response) {
+	private void guardar(HttpServletRequest request, HttpServletResponse response) throws ProductoException {
 		
 		
 		int id = Integer.parseInt(pId);
@@ -193,6 +193,9 @@ public class ProductosController extends HttpServlet {
 					}else {            // crear
 						daoProducto.create(pGuardar);
 					}
+					
+				}catch (ProductoException e) {
+					throw e;
 					
 				}catch (Exception e) {  // validacion a nivel de base datos
 					
@@ -224,18 +227,15 @@ public class ProductosController extends HttpServlet {
 		
 	}
 
-	private void eliminar(HttpServletRequest request, HttpServletResponse response) {
+	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws ProductoException {
 	
 		int id = Integer.parseInt(pId);
-		try {
-			Producto pEliminado = daoProducto.deleteByUser(id,uLogeado.getId());
-			request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY, "Eliminado " + pEliminado.getNombre() ));
-		} catch (Exception e) {
-			request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "No se puede Eliminar el producto"));
-			
-		}
+		
+		Producto pEliminado = daoProducto.deleteByUser(id, uLogeado.getId() );
+		request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY, "Eliminado " + pEliminado.getNombre() ));
 		
 		listar(request, response);
+		
 		
 	}
 

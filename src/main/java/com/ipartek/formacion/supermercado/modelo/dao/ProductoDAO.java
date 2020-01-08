@@ -130,8 +130,8 @@ public class ProductoDAO implements IProductoDAO{
 					resul = mapper(rs);
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (SQLException e) {
+			throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
 		}
 		return resul;
 	}
@@ -172,11 +172,15 @@ public class ProductoDAO implements IProductoDAO{
 			int affectedRows = pst.executeUpdate();
 			if (affectedRows != 1) {
 				resultado = null;
+				LOG.warn("No te pertenece producto al usuario");
+
 				throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
+			} else {
+				LOG.debug("registro eliminado");
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
 		}
 		
 		return resultado;		
@@ -209,7 +213,7 @@ public class ProductoDAO implements IProductoDAO{
 	}
 	
 	@Override
-	public Producto updateByUser(int idProducto, int idUsuario, Producto pojo) throws ProductoException {
+	public Producto updateByUser(int idProducto, int idUsuario, Producto pojo) throws ProductoException, SQLException {
 		Producto resultado=null;
 		
 		try (Connection con = ConnectionManager.getConnection();
@@ -227,14 +231,13 @@ public class ProductoDAO implements IProductoDAO{
 			if (affectedRows == 1) {
 				resultado = pojo;
 			}else {
-				throw new ProductoException("No se encontro el producto");
+				LOG.warn("No le pertence el producto");
+				throw new ProductoException(ProductoException.EXCEPTION_UNAUTORIZED);
 			}
 
-		} catch (ProductoException e) {
-			
-		}catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}catch ( SQLException e) {			
+			LOG.debug("ya existe el nombre del producto");
+			throw e;
 		}
 		
 		return resultado;
