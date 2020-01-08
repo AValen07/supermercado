@@ -1,7 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ include file="/includes/header.jsp" %>   
-    	
+<div class="row justify-content-center">
+  <div class="border border-primary col-sm-6">   	
 	<h1>FORMULARIO</h1>
 	
 	<form action="mipanel/productos" method="post" class="mb-4">
@@ -35,7 +36,6 @@
 		<input type="submit" value="${(producto.id>0)?"Modificar":"Crear" }" class="btn btn-block btn-primary">
 	
 	</form>
-	
 	<c:if test="${producto.id > 0}">
 	
 
@@ -69,6 +69,9 @@
 
 
 	</c:if>
+  </div>
+</div>
+	
 	
 
 <%@ include file="/includes/footer.jsp" %> 

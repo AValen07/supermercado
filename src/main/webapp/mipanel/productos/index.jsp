@@ -5,20 +5,30 @@
 	
 	<a href="mipanel/productos?accion=formulario">Nuevo Producto</a>
 	
-	<table  class="tabla display" style="width:100%">
+	<table  class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
         <thead>
             <tr>
-                <th>id</th>                
-                <th>nombre</th>                
-                <th>Editar</th>                
+                <th>ID</th>
+  				<th>Imagen</th>  				
+  				<th>Producto</th>
+  				<th>Precio</th>
+  				<th>Descuento</th>
+  				<th>Descripcion</th>
+  				<th>Usuario</th>
+  				<th>Acciones</th>                
             </tr>
         </thead>
         <tbody>
-        	<c:forEach items="${productos}" var="p">
+        	<c:forEach items="${productos}" var="producto">
             	<tr>
-                	<td>${p.id}</td>
-                	<td>${p.nombre }</td>                	
-                	<td><a href="mipanel/productos?accion=formulario&id=${p.id}">Editar</a></td>
+                	<td>${producto.id}</td>
+	  				<td><img style="heigh:100px; width:100px;" src="${producto.imagen}"></td>
+	  				<td>${producto.nombre}</td>
+	  				<td>${producto.precio}</td>
+	  				<td>${producto.descuento}</td>
+	  				<td>${producto.descripcion}</td>	  				
+	  				<td>${producto.usuario.nombre}</td>               	
+                	<td><a href="mipanel/productos?accion=formulario&id=${producto.id}">Editar</a></td>
             	</tr>
             </c:forEach>	
         </tbody>    
