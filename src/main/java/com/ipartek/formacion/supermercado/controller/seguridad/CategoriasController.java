@@ -1,6 +1,7 @@
 package com.ipartek.formacion.supermercado.controller.seguridad;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -8,15 +9,19 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import org.apache.log4j.Logger;
 
+import com.ipartek.formacion.supermercado.controller.Alerta;
 import com.ipartek.formacion.supermercado.controller.mipanel.ProductosController;
 import com.ipartek.formacion.supermercado.modelo.dao.CategoriaDAO;
 import com.ipartek.formacion.supermercado.modelo.dao.ProductoException;
+import com.ipartek.formacion.supermercado.modelo.pojo.Categoria;
+import com.ipartek.formacion.supermercado.modelo.pojo.Producto;
 import com.ipartek.formacion.supermercado.modelo.pojo.Usuario;
 
 /**
@@ -61,7 +66,7 @@ public class CategoriasController extends HttpServlet {
 	@Override
 	public void destroy() {	
 		super.destroy();
-		
+		daoCategoria=null;
 		factory = null;
 		validator = null;
 	}
@@ -116,22 +121,79 @@ public class CategoriasController extends HttpServlet {
 
 
 	private void irFormulario(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
 		
+		Categoria cEditar = new Categoria();
+		if(cId!=null) {
+			int id=Integer.parseInt(cId);
+			cEditar=daoCategoria.getById(id);
+		}
+		
+		request.setAttribute("categoria", cEditar );
+		vistaSeleccionda = VIEW_FORM;
 	}
 
 	private void guardar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
 		
+		int id=Integer.parseInt(cId);
+		Categoria cGuardar = new Categoria();
+		cGuardar.setId(id);
+		cGuardar.setNombre(cNombre);
+		
+		Set<ConstraintViolation<Categoria>> validaciones = validator.validate(cGuardar);
+		if( validaciones.size() > 0 ) {			
+			mensajeValidacion(request, validaciones);
+		}else {	
+		
+				try {
+				
+					if ( id > 0 ) {  // modificar
+						
+						daoCategoria.update(id, cGuardar);		
+						
+					}else {            // crear
+						daoCategoria.create(cGuardar);
+					}
+					
+				}catch (Exception e) {  // validacion a nivel de base datos
+					
+					request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, "El nombre ya existe, selecciona otro"));
+				}			
+		}	
+		
+		request.setAttribute("categoria", cGuardar );
+		vistaSeleccionda = VIEW_FORM;
 	}
 
-	private void eliminar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
+	
+
+	private void eliminar(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		int id = Integer.parseInt(cId);
+		
+		Categoria cEliminado = daoCategoria.delete(id);
+		request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY, "Eliminado " + cEliminado.getNombre() ));
+		
+		listar(request, response);
 		
 	}
 
 	private void listar(HttpServletRequest request, HttpServletResponse response) {
-		// TODO Auto-generated method stub
+		
+		request.setAttribute("categorias", daoCategoria.getAll());
+		vistaSeleccionda = VIEW_TABLA;
+	}
+	
+	private void mensajeValidacion(HttpServletRequest request, Set<ConstraintViolation<Categoria>> validaciones) {
+		StringBuilder mensaje = new StringBuilder();
+		for (ConstraintViolation<Categoria> cv : validaciones) {
+			
+			mensaje.append("<p>");
+			mensaje.append(cv.getPropertyPath()).append(": ");
+			mensaje.append(cv.getMessage());
+			mensaje.append("</p>");
+			
+		}
+		
+		request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_DANGER, mensaje.toString() ));
 		
 	}
 }

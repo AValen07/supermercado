@@ -231,7 +231,7 @@ public class ProductosController extends HttpServlet {
 	
 		int id = Integer.parseInt(pId);
 		
-		Producto pEliminado = daoProducto.deleteByUser(id, uLogeado.getId() );
+		Producto pEliminado = daoProducto.deleteByUser(id, uLogeado.getId());
 		request.setAttribute("mensajeAlerta", new Alerta(Alerta.TIPO_PRIMARY, "Eliminado " + pEliminado.getNombre() ));
 		
 		listar(request, response);

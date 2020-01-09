@@ -45,9 +45,8 @@ public class CategoriaDAO implements ICategoriaDAO {
 			try (ResultSet rs = cs.executeQuery()) {
 				while (rs.next()) {
 					// TODO mapper
-					Categoria c = new Categoria();
-					c.setId(rs.getInt("id"));
-					c.setNombre(rs.getString("nombre"));
+					Categoria c = mapper(rs);
+
 					registros.add(c);
 				}
 			}
@@ -63,7 +62,7 @@ public class CategoriaDAO implements ICategoriaDAO {
 	public Categoria getById(int id) {
 		Categoria resultado = null;
 
-		LOG.trace("encontrar una categoria po el id "+ id);
+		LOG.trace("encontrar una categoria po el id " + id);
 		try (Connection con = ConnectionManager.getConnection();
 				CallableStatement cs = con.prepareCall("{ CALL pa_categoria_getbyid(?) }");) {
 
@@ -71,36 +70,34 @@ public class CategoriaDAO implements ICategoriaDAO {
 			LOG.debug(cs);
 			try (ResultSet rs = cs.executeQuery()) {
 				if (rs.next()) {
-					// TODO mapper
-					Categoria c = new Categoria();
-					c.setId(rs.getInt("id"));
-					c.setNombre(rs.getString("nombre"));
+					resultado = mapper(rs);
+				} else {
+					resultado=null;
 				}
 			}
-			
+
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error(e);
 		}
 		return resultado;
 	}
 
 	@Override
 	public Categoria delete(int id) throws Exception {
-		Categoria resultado = null;
+		Categoria resultado = getById(id);
 
+		if(resultado==null) {
+			throw new Exception("No se ha encontrado categoria "+id);
+		}
 		LOG.trace("eliminar una categoria");
 		try (Connection con = ConnectionManager.getConnection();
 				CallableStatement cs = con.prepareCall("{ CALL pa_categoria_delete(?) }");) {
 
 			cs.setInt(1, id);
-			resultado = getById(id);
 			LOG.debug(cs);
 
-			int affectedRows = cs.executeUpdate();
-			if (affectedRows != 1) {
-				resultado = null;
-			}
+			cs.executeUpdate();
+			
 		}
 
 		return null;
@@ -108,9 +105,9 @@ public class CategoriaDAO implements ICategoriaDAO {
 
 	@Override
 	public Categoria update(int id, Categoria pojo) throws Exception {
-		Categoria resultado = null;
+		Categoria resultado = pojo;
 
-		LOG.trace("insertar nueva categoria" + pojo);
+		LOG.trace("modificar categoria por id" + pojo);
 		try (Connection con = ConnectionManager.getConnection();
 				CallableStatement cs = con.prepareCall("{ CALL pa_categoria_update(?,?) }");) {
 
@@ -122,8 +119,8 @@ public class CategoriaDAO implements ICategoriaDAO {
 			int affectedRows = cs.executeUpdate();
 
 			if (affectedRows == 1) {
-
-				resultado = pojo;
+				
+				pojo.setId(id);
 			}
 		}
 
@@ -155,6 +152,15 @@ public class CategoriaDAO implements ICategoriaDAO {
 		}
 
 		return resultado;
+	}
+
+	private Categoria mapper(ResultSet rs) throws SQLException {
+
+		Categoria c = new Categoria();
+
+		c.setId(rs.getInt("id"));
+		c.setNombre(rs.getString("nombre"));
+		return null;
 	}
 
 }

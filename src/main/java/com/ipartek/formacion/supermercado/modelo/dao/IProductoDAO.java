@@ -45,4 +45,10 @@ public interface IProductoDAO extends IDAO<Producto> {
 	 * 					</ol>
 	 */
 	Producto deleteByUser(int idProducto, int idUsuario) throws SQLException, ProductoException;
+	
+	Producto getAllByCategoria(int idCategoria);
+	
+	Producto getByIdByCategoria(int idProducto, int idCategoria) throws Exception;
+	
+	Producto updateByCategoria(int idProducto, int idCategoria, Producto pojo) throws SQLException;
 }

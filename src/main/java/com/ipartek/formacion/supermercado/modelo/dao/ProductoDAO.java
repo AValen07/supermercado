@@ -272,6 +272,26 @@ public class ProductoDAO implements IProductoDAO {
 		return pojo;
 	}
 
+	
+
+	@Override
+	public Producto getAllByCategoria(int idCategoria) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Producto getByIdByCategoria(int idProducto, int idCategoria) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Producto updateByCategoria(int idProducto, int idCategoria, Producto pojo) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	private Producto mapper(ResultSet rs) throws SQLException {
 
 		Producto p = new Producto();
