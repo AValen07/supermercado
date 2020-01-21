@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ipartek.formacion</groupId>
-	<artifactId>supermercado</artifactId>  
+	<artifactId>supermercado-rest</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1</version>
-	<name>supermercado</name>
+	<name>supermercado-rest</name>
 
 
 	<!-- variables comunes para todo el POM -->
@@ -21,6 +21,27 @@
 
 	<!-- librerias que vamos a usar u otros proyectos maven -->
 	<dependencies>
+
+		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.3</version>
+		</dependency>
+
+		<!-- dependencia del modelo -->
+		<dependency>
+			<groupId>com.ipartek.formacion</groupId>
+			<artifactId>supermercado-modelo</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 
 		<!-- Web Project 3.0 -->
 		<dependency>
@@ -47,7 +68,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.46</version>		
+			<version>5.1.46</version>
 		</dependency>
 
 		<dependency>
@@ -55,10 +76,10 @@
 			<artifactId>pdfbox</artifactId>
 			<version>2.0.16</version>
 		</dependency>
-		
-		
 
-		
+
+
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -76,11 +97,11 @@
 
 		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-		    <version>1.2.17</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
 		</dependency>
-		
+
 		<!-- validaciones -->
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -123,6 +144,6 @@
 		</plugins>
 
 
-		<finalName>supermercado</finalName>
+		<finalName>supermercado-rest</finalName>
 	</build>
 </project>
