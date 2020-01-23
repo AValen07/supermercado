@@ -1,5 +1,7 @@
 package com.ipartek.formacion.supermercado.utils;
 
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.LowerCase;
+
 public class Utilidades {
 
 	/**
@@ -11,19 +13,19 @@ public class Utilidades {
 	 * 
 	 *                   Ejemplos:
 	 *                   <ol>
-	 *                   	<li>/ url valida</li>
-	 *                   	<li>/2 url valida</li>
-	 *                   	<li>/2/ ul valida</li>
-	 *                   	<li>/2/2 url pathinfo esta mal formado</li>
-	 *                   	<li>/2/otracosa/34 pathinfo esta mal formado</li>
+	 *                   <li>/ url valida</li>
+	 *                   <li>/2 url valida</li>
+	 *                   <li>/2/ ul valida</li>
+	 *                   <li>/2/2 url pathinfo esta mal formado</li>
+	 *                   <li>/2/otracosa/34 pathinfo esta mal formado</li>
 	 *                   </ol>
 	 */
 	public static int obtenerId(String pathInfo) throws Exception {
 		int id = 0;
 		try {
-			if (pathInfo.length()==1||pathInfo==null) {
-				id=-1;
-			}else if (pathInfo.endsWith("/")) {
+			if (pathInfo.length() == 1 || pathInfo == null) {
+				id = -1;
+			} else if (pathInfo.endsWith("/")) {
 
 				id = Integer.parseInt(pathInfo.substring(1, (pathInfo.length() - 1)));
 
@@ -37,5 +39,28 @@ public class Utilidades {
 		// throw new Exception("Sin implementar");
 		// return 0;
 		return id;
+	}
+
+	/**
+	 * Obtenemos el numero de palabras que hay en una frase.
+	 * 
+	 * @param frase String del que deberemos contar el numero de palabras.
+	 * @return el numero de palabras.
+	 */	
+	public static int contarPalabras(String frase) {
+		int resultado = 0;
+		boolean sw = true;
+
+		if (frase != null && frase.length() > 0) {
+			for (char c : frase.toCharArray()) {
+				if (!Character.isLetter(c) && !sw) {
+					sw = true;
+				} else if (Character.isLetter(c) && sw) {
+					resultado++;
+					sw = false;
+				}
+			}
+		}
+		return resultado;
 	}
 }

@@ -28,8 +28,10 @@ public class ProductoRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final static Logger LOG = Logger.getLogger(ProductoRestController.class);
 
+	private String jsonResponseBody;
 	private ProductoDAO productoDao;
 	private PrintWriter out;
+	private String pathInfo;
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
@@ -52,6 +54,8 @@ public class ProductoRestController extends HttpServlet {
 
 		response.setContentType("application/json"); // por defecto => text/html;charset=UTF-8
 		response.setCharacterEncoding("utf-8");
+		out.print(jsonResponseBody);
+		out.flush();
 	}
 
 	/**
@@ -61,53 +65,49 @@ public class ProductoRestController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		pathInfo = request.getPathInfo();
+		int id = 0;
 		out = response.getWriter();
 
 		String pathInfo = request.getPathInfo();
 
 		LOG.debug("mirar pathInfo:" + pathInfo + " para saber si es listado o detalle");
+		try {
+			id = Utilidades.obtenerId(pathInfo);
 
-		if (pathInfo.length() <= 1) {
-			// response body
-			ArrayList<Producto> lista = (ArrayList<Producto>) productoDao.getAll();
+			if (id == -1) {
+				// response body
+				ArrayList<Producto> lista = (ArrayList<Producto>) productoDao.getAll();
 
-			if (lista.size() != 0) {
-				String jsonResponseBody = new Gson().toJson(lista);
-				out.print(jsonResponseBody.toString()); // retornamos un array vacio dentro del body
-				out.flush();
+				if (lista.size() != 0) {
+					jsonResponseBody = new Gson().toJson(lista);
+					
 
-				response.setStatus(HttpServletResponse.SC_OK);
+					response.setStatus(HttpServletResponse.SC_OK);
+				} else {
+					response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				}
+
 			} else {
-				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-			}
-			
-		} else {
-			int id=0;
-			try {
-				id = Utilidades.obtenerId(pathInfo);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			LOG.debug("id producto es "+id);
-			
-			Producto producto = productoDao.getById(id);
-			if(producto!=null) {
-				String jsonResponseBody = new Gson().toJson(producto);
-				out.print(jsonResponseBody.toString()); // retornamos un array vacio dentro del body
-				out.flush();
 
-				response.setStatus(HttpServletResponse.SC_OK);
-			} else {
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				LOG.debug("id producto es " + id);
+
+				Producto producto = productoDao.getById(id);
+				if (producto != null) {
+					jsonResponseBody = new Gson().toJson(producto);
+					response.setStatus(HttpServletResponse.SC_OK);
+				} else {
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					jsonResponseBody = new Gson().toJson(new ResponseMensaje("Producto no encontrado")).toString();
+				}
+				LOG.debug(producto);
 			}
-			LOG.debug(producto);
+		} catch (Exception e) {
+			jsonResponseBody = new Gson().toJson(new ResponseMensaje("Peticion invalida.")).toString();
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		}
 
 	}
-
-	
-	
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -116,35 +116,29 @@ public class ProductoRestController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		LOG.debug("POST crear recurso");
-		
+
 		// convertir json del request body a Objeto
-		BufferedReader reader = request.getReader();               
+		BufferedReader reader = request.getReader();
 		Gson gson = new Gson();
 		Producto producto = gson.fromJson(reader, Producto.class);
-		
-		//TODO validar objeto
-		
-		LOG.debug(" Json convertido a Objeto: " + producto);
-		out = response.getWriter();		  
+
+		// TODO validar objeto
+
+		LOG.debug("Json convertido a Objeto: " + producto);
+		out = response.getWriter();
 
 		try {
 			productoDao.create(producto);
-			
-			response.setStatus( HttpServletResponse.SC_CREATED );
-			
-			String jsonResponseBody = new Gson().toJson( new ResponseMensaje("Producto creado"));		  
-			out.print(jsonResponseBody.toString()); 	
-			out.flush();
-			
+
+			response.setStatus(HttpServletResponse.SC_CREATED);
+			jsonResponseBody = new Gson().toJson(new ResponseMensaje("Producto creado"));
+
 		} catch (Exception e) {
-			response.setStatus( HttpServletResponse.SC_NOT_IMPLEMENTED );
-			String jsonResponseBody = new Gson().toJson( new ResponseMensaje("Producto creado"));		  
-			out.print(jsonResponseBody.toString()); 	
-			out.flush();
+			response.setStatus(HttpServletResponse.SC_NOT_IMPLEMENTED);
+			jsonResponseBody = new Gson().toJson(new ResponseMensaje("Peticion denegada"));
+
 		}
-		
-		
-		  
+
 	}
 
 	/**
@@ -152,7 +146,41 @@ public class ProductoRestController extends HttpServlet {
 	 */
 	protected void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
+		BufferedReader reader = request.getReader();
+		pathInfo = request.getPathInfo();
+		out = response.getWriter();
+		int id = 0;
+		
+		try {
+			id=Utilidades.obtenerId(pathInfo);
+			
+			if(id!=-1) {
+				// id valido
+				Producto producto=productoDao.getById(id);
+				if(producto!=null) {
+					// el producto existe, podemos hacer la update.
+					Gson gson = new Gson();
+					producto = gson.fromJson(reader, Producto.class);
+					productoDao.update(id, producto);
+					
+					jsonResponseBody = new Gson().toJson(new ResponseMensaje("Actualizacion realizada.")).toString();
+					response.setStatus(HttpServletResponse.SC_OK);
+					
+				} else {
+					jsonResponseBody = new Gson().toJson(new ResponseMensaje("El producto no existe.")).toString();
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				}
+			}else {
+				jsonResponseBody = new Gson().toJson(new ResponseMensaje("La url esta aml formada")).toString();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			jsonResponseBody = new Gson().toJson(new ResponseMensaje("Peticion invalida.")).toString();
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+		
+		
 	}
 
 	/**
@@ -160,7 +188,26 @@ public class ProductoRestController extends HttpServlet {
 	 */
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
+		pathInfo = request.getPathInfo();
+		out = response.getWriter();
+		int id = 0;
+
+		try {
+			id = Utilidades.obtenerId(pathInfo);
+			if (id != -1) {
+				productoDao.delete(id);
+				jsonResponseBody = new Gson().toJson(new ResponseMensaje("Producto eliminado")).toString();
+				response.setStatus(HttpServletResponse.SC_OK);
+			} else {
+				jsonResponseBody = new Gson().toJson(new ResponseMensaje("Producto Inexistente")).toString();
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		} catch (Exception e) {
+			jsonResponseBody = new Gson().toJson(new ResponseMensaje("Producto Inexistente")).toString();
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+
 	}
 
 }
