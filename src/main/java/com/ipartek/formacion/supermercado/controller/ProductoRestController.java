@@ -50,10 +50,12 @@ public class ProductoRestController extends HttpServlet {
 	 */
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		super.service(request, response); // llama a doGet, doPost, doPut o doDelete
-
+		
 		response.setContentType("application/json"); // por defecto => text/html;charset=UTF-8
 		response.setCharacterEncoding("utf-8");
+		
+		super.service(request, response); // llama a doGet, doPost, doPut o doDelete
+		
 		out.print(jsonResponseBody);
 		out.flush();
 	}
